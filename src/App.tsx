@@ -48,8 +48,7 @@ function App() {
   return (
     <div className="min-h-screen bg-white flex flex-col items-center pb-12">
       <img src="https://upload.wikimedia.org/wikipedia/commons/d/de/SpaceX-Logo.svg" alt="SpaceX" className="h-12 mx-auto my-6" />
-
-      {/* CHANGED: Replaced fixed w-[952px] with responsive max-w and padding */}
+      <hr className="w-full max-w-[952px] border-gray-200 mb-8" />
       <div className='w-full max-w-[952px] mx-auto px-4 sm:px-6 lg:px-8'>
         {/* Filters */}
         <div className='flex justify-between pb-8 pt-4'>
