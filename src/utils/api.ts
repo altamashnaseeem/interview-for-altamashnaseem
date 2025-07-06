@@ -13,7 +13,7 @@ export const fetchLaunchData = async (): Promise<NormalizedLaunch[]> => {
   const launchpadMap = new Map(launchpads.map(l => [l.id, `${l.name}, ${l.locality}`]));
   const payloadMap = new Map(payloads.map(p => [p.id, p.orbit]));
 
-  return launches.map((launch, index) => ({
+  return launches.map((launch) => ({
     id: launch.id,
     number: launch.flight_number,
     date: new Date(launch.date_utc).toLocaleString('en-GB'),
