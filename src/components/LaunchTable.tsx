@@ -92,10 +92,10 @@ const LaunchTable: React.FC<Props> = ({ dateFilter, launchStatusFilter }) => {
   return (
     <div className="">
       {/* Added overflow-x-auto here to make the table horizontally scrollable */}
-      <div className="overflow-x-auto"> 
-        <table className="min-w-full table-auto text-sm border border-gray-200"> {/* Table has overall border */}
+      <div className="overflow-x-auto">
+        <table className="min-w-full table-auto text-sm border border-gray-200">
           <thead>
-            <tr className="bg-gray-50 text-gray-600 border-b border-gray-200"> {/* Header row has bottom border */}
+            <tr className="bg-gray-50 text-gray-600 border-b border-gray-200">
               <th className="p-4">No.</th>
               <th className="p-4">Launched (UTC)</th>
               <th className="p-4">Location</th>
@@ -106,95 +106,105 @@ const LaunchTable: React.FC<Props> = ({ dateFilter, launchStatusFilter }) => {
             </tr>
           </thead>
           <tbody>
-            {currentLaunches.map((launch, idx) => (
-              <tr
-                key={launch.id}
-                className="text-center text-gray-900 hover:bg-gray-50 cursor-pointer transition-colors border-b border-gray-200" // Data rows have bottom border
-                onClick={() => handleRowClick(launch.id)}
-              >
-                <td className="py-4 px-2">{startIndex + idx + 1}</td>
-                <td className="py-4 px-2">
-                  {new Date(launch.date_utc).toLocaleString('en-GB', {
-                    day: '2-digit',
-                    month: 'short',
-                    year: 'numeric',
-                    hour: '2-digit',
-                    minute: '2-digit',
-                    hour12: false,
-                    timeZone: 'UTC'
-                  })}
+            {currentLaunches.length > 0 ? (
+              currentLaunches.map((launch, idx) => (
+                <tr
+                  key={launch.id}
+                  className="text-center text-gray-900 hover:bg-gray-50 cursor-pointer transition-colors border-b border-gray-200"
+                  onClick={() => handleRowClick(launch.id)}
+                >
+                  <td className="py-4 px-2">{startIndex + idx + 1}</td>
+                  <td className="py-4 px-2">
+                    {new Date(launch.date_utc).toLocaleString('en-GB', {
+                      day: '2-digit',
+                      month: 'short',
+                      year: 'numeric',
+                      hour: '2-digit',
+                      minute: '2-digit',
+                      hour12: false,
+                      timeZone: 'UTC'
+                    })}
+                  </td>
+                  <td className="py-4 px-2">{launchpadsMap[launch.launchpad] || 'Unknown'}</td>
+                  <td className="py-4 px-2">{launch.name}</td>
+                  <td className="py-4 px-2">{payloadsMap[launch.payloads[0]] || 'Unknown'}</td>
+                  <td className="py-4 px-2">
+                    <span className={`px-2 py-1 rounded-full text-xs font-medium ${
+                      launch.upcoming
+                        ? 'bg-yellow-100 text-yellow-800'
+                        : launch.success
+                          ? 'bg-green-100 text-green-800'
+                          : 'bg-red-100 text-red-800'
+                    }`}>
+                      {launch.upcoming ? 'Upcoming' : launch.success ? 'Success' : 'Failed'}
+                    </span>
+                  </td>
+                  <td className="py-4 px-2">{rocketsMap[launch.rocket] || 'Unknown'}</td>
+                </tr>
+              ))
+            ) : (
+              <tr>
+                <td colSpan={7} className="py-8 text-center text-gray-500">
+                  No results found for the specified filter.
                 </td>
-                <td className="py-4 px-2">{launchpadsMap[launch.launchpad] || 'Unknown'}</td>
-                <td className="py-4 px-2">{launch.name}</td>
-                <td className="py-4 px-2">{payloadsMap[launch.payloads[0]] || 'Unknown'}</td>
-                <td className="py-4 px-2">
-                  <span className={`px-2 py-1 rounded-full text-xs font-medium ${
-                    launch.upcoming
-                      ? 'bg-yellow-100 text-yellow-800'
-                      : launch.success
-                        ? 'bg-green-100 text-green-800'
-                        : 'bg-red-100 text-red-800'
-                  }`}>
-                    {launch.upcoming ? 'Upcoming' : launch.success ? 'Success' : 'Failed'}
-                  </span>
-                </td>
-                <td className="py-4 px-2">{rocketsMap[launch.rocket] || 'Unknown'}</td>
               </tr>
-            ))}
+            )}
           </tbody>
         </table>
-      </div> {/* End of overflow-x-auto div */}
-
-      {/* Pagination */}
-      <div className="mt-4 flex justify-end items-center gap-2">
-        <button
-          onClick={() => setCurrentPage((prev) => Math.max(1, prev - 1))}
-          disabled={currentPage === 1}
-          className="px-3 py-1 border rounded disabled:opacity-50"
-        >
-          Prev
-        </button>
-
-        <button
-          onClick={() => setCurrentPage(1)}
-          className={`px-3 py-1 rounded ${currentPage === 1 ? 'bg-blue-500 text-white' : 'border'}`}
-        >
-          1
-        </button>
-
-        {currentPage > 3 && <span className="px-2 py-1">...</span>}
-
-        {Array.from({ length: 3 }, (_, i) => currentPage - 1 + i)
-          .filter((page) => page > 1 && page < totalPages)
-          .map((page) => (
-            <button
-              key={page}
-              onClick={() => setCurrentPage(page)}
-              className={`px-3 py-1 rounded ${currentPage === page ? 'bg-blue-500 text-white' : 'border'}`}
-            >
-              {page}
-            </button>
-          ))}
-
-        {currentPage < totalPages - 2 && <span className="px-2 py-1">...</span>}
-
-        {totalPages > 1 && (
-          <button
-            onClick={() => setCurrentPage(totalPages)}
-            className={`px-3 py-1 rounded ${currentPage === totalPages ? 'bg-blue-500 text-white' : 'border'}`}
-          >
-            {totalPages}
-          </button>
-        )}
-
-        <button
-          onClick={() => setCurrentPage((prev) => Math.min(totalPages, prev + 1))}
-          disabled={currentPage === totalPages}
-          className="px-3 py-1 border rounded disabled:opacity-50"
-        >
-          Next
-        </button>
       </div>
+
+      {/* Pagination (only show if there are launches to paginate) */}
+      {filteredLaunches.length > 0 && (
+        <div className="mt-4 flex justify-end items-center gap-2">
+          <button
+            onClick={() => setCurrentPage((prev) => Math.max(1, prev - 1))}
+            disabled={currentPage === 1}
+            className="px-3 py-1 border rounded disabled:opacity-50"
+          >
+            Prev
+          </button>
+
+          <button
+            onClick={() => setCurrentPage(1)}
+            className={`px-3 py-1 rounded ${currentPage === 1 ? 'bg-blue-500 text-white' : 'border'}`}
+          >
+            1
+          </button>
+
+          {currentPage > 3 && <span className="px-2 py-1">...</span>}
+
+          {Array.from({ length: 3 }, (_, i) => currentPage - 1 + i)
+            .filter((page) => page > 1 && page < totalPages)
+            .map((page) => (
+              <button
+                key={page}
+                onClick={() => setCurrentPage(page)}
+                className={`px-3 py-1 rounded ${currentPage === page ? 'bg-blue-500 text-white' : 'border'}`}
+              >
+                {page}
+              </button>
+            ))}
+
+          {currentPage < totalPages - 2 && <span className="px-2 py-1">...</span>}
+
+          {totalPages > 1 && (
+            <button
+              onClick={() => setCurrentPage(totalPages)}
+              className={`px-3 py-1 rounded ${currentPage === totalPages ? 'bg-blue-500 text-white' : 'border'}`}
+            >
+              {totalPages}
+            </button>
+          )}
+
+          <button
+            onClick={() => setCurrentPage((prev) => Math.min(totalPages, prev + 1))}
+            disabled={currentPage === totalPages}
+            className="px-3 py-1 border rounded disabled:opacity-50"
+          >
+            Next
+          </button>
+        </div>
+      )}
 
       {/* Detail Modal */}
       {selectedLaunchId && (
